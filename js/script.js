@@ -12,6 +12,7 @@ var x = d3.time.scale()
 var y = d3.scale.linear()
     .range([height, 0]);
 
+//Color exists as a Scale.
 var color = d3.scale.category10();
 
 var xAxis = d3.svg.axis()
@@ -22,6 +23,8 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
 
+//The line function draws points for a path
+//Based on the `date` and `value` for each row in each series.
 var line = d3.svg.line()
     .interpolate("basis")
     .x(function(d) { return x(d.date); })
@@ -56,7 +59,8 @@ d3.tsv("data/us_mo_co_unemployment.tsv", function(error, data) {
 
   //color.domain is an array of our column headers (but not "date")
   //In other words, it's the values we'll be charting.
-  var cities = color.domain().map(function(name) {
+  //Remember, colorDomain is an array of 3 values, which are our column headers.
+  var places = colorDomain.map(function(name) {
     return {
       name: name,
       values: data.map(function(d) {
@@ -68,8 +72,9 @@ d3.tsv("data/us_mo_co_unemployment.tsv", function(error, data) {
   x.domain(d3.extent(data, function(d) { return d.date; }));
 
   y.domain([
-    d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.rate; }); }),
-    d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.rate; }); })
+    //d3.min(places, function(c) { return d3.min(c.values, function(v) { return v.rate; }); }),
+    0,
+    d3.max(places, function(c) { return d3.max(c.values, function(v) { return v.rate; }); })
   ]);
 
   svg.append("g")
@@ -88,7 +93,7 @@ d3.tsv("data/us_mo_co_unemployment.tsv", function(error, data) {
       .text("Unemployment Rate");
 
   var city = svg.selectAll(".city")
-      .data(cities)
+      .data(places)
     .enter().append("g")
       .attr("class", "city");
 
